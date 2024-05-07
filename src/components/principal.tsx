@@ -1,13 +1,14 @@
 "use client"
-
-import React, { useEffect, useState, MouseEventHandler } from "react";
+import React, { useState, MouseEventHandler } from "react";
 import Image from "next/image";
 import background from '../../public/dragonCity.png';
-
-
-
+import Modal from 'react-modal';
+import styles from './css/Sheet.module.css';
+//Modal.setAppElement('#__next');
 
 const Place = () => {
+  const [modalIsOpen,setIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Adjusted type to accept string or null
   const [showcursorMarker, setShowcursorMarker] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [structures, setStructures] = useState<{ x: number; y: number }[]>([]);
@@ -15,6 +16,15 @@ const Place = () => {
   const handleMouseMove: MouseEventHandler = (e) => {
     setCursorPosition({ x: e.pageX, y: e.pageY });
   };
+
+  
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal(){
+    setIsOpen(false);
+  }
 
   const handleClick = () => {
     setStructures([...structures, { x: cursorPosition.x, y: cursorPosition.y }]);
@@ -27,6 +37,7 @@ const Place = () => {
   };
 
   return (
+
     <div className="w-full h-full relative">
       <button
         className="absolute bg-blue-50 text-white px-4 py-2 rounded-md ml-4"
@@ -34,6 +45,23 @@ const Place = () => {
       >
         Agregar
       </button>
+
+      <div>
+      <button onClick={openModal}>Bulding availables</button>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Example Modal"
+      >
+        <button onClick={closeModal} className="buildings">close</button>
+        <div>I am a modal</div>
+        {selectedImage && <img src={selectedImage} alt="Selected" style={{ width: '100px', height: 'auto' }} />}
+        <button onClick={() => setSelectedImage('/build1.png')}>Image 1</button>
+        <button onClick={() => setSelectedImage('/build2.jpg')}>Image 2</button>
+        <button onClick={() => setSelectedImage('/buil3.jpg')}>Image 3</button>
+      </Modal>
+    </div>
+
 
       {showcursorMarker && (
         <div
@@ -50,19 +78,23 @@ const Place = () => {
         ></div>
       ))}
 
-      <Image
-        src={background}
-        alt="clash_map"
-        width={1000}
-        height={1000}
-        onClick={() => {
-          showcursorMarker ? handleClick() : null;
-        }}
-        onMouseMove={handleMouseMove}
-        className="cover w-full h-full"
-        style={{ maxWidth: "400%", maxHeight: "200%" }}
-      />
+      <div className={styles.imageContainer}>
+        <Image
+          src={background}
+          alt="clash_map"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+          className={styles.yourImageClass}
+          onClick={() => {
+            showcursorMarker ? handleClick() : null;
+          }}
+          onMouseMove={handleMouseMove}
+        />
+      </div>
+
     </div>
+    
   );
 };
 
